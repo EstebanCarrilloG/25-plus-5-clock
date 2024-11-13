@@ -1,7 +1,10 @@
+import "../styles/lengthControl.css";
+
 export default function LengthControl({ type, value, handleBreak, start }) {
   return (
     <div className="length-control">
-      <div id={type.toLowerCase() + "-label"}>{type} Length</div>
+      <div className="label" id={type.toLowerCase() + "-label"}>{type} Length</div>
+      <div className="btn-group">
       <button
         onClick={() => !start && handleBreak(value === 1 ? 1 : value - 1, type)}
         className="btn-level"
@@ -10,9 +13,9 @@ export default function LengthControl({ type, value, handleBreak, start }) {
       >
         <i className="fa fa-arrow-down fa-2x"></i>
       </button>
-      <div className="btn-level" id={type.toLowerCase() + "-length"}>
+      <span className="level" id={type.toLowerCase() + "-length"}>
         {value}
-      </div>
+      </span>
       <button
         onClick={() =>
           !start && handleBreak(value === 60 ? 60 : value + 1, type)
@@ -23,6 +26,7 @@ export default function LengthControl({ type, value, handleBreak, start }) {
       >
         <i className="fa fa-arrow-up fa-2x"></i>
       </button>
+      </div>
     </div>
   );
 }

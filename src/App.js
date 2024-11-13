@@ -79,61 +79,67 @@ function App() {
     <main className="main">
       <div className="main-container">
         <h1>25 + 5 Clock</h1>
-        <LengthControl
-          type="Break"
-          value={breakLength}
-          handleBreak={handleBreak}
-          start={start}
-        />
-        <LengthControl
-          type="Session"
-          value={sessionLength}
-          handleBreak={handleBreak}
-          start={start}
-        />
-        <div className="timer">
-          <div className="timer-wrapper">
-            <div id="timer-label">{!isBreak ? "Session" : "Break"}</div>
-            <div id="time-left">
-              {!isBreak ? (
-                <>
-                  {" "}
-                  {sessionTimer < 10 ? `0${sessionTimer}` : sessionTimer}:
-                  {seconds === 60
-                    ? "00"
-                    : seconds < 10
-                    ? `0${seconds}`
-                    : seconds}
-                </>
-              ) : (
-                <>
-                  {" "}
-                  {breakTimer < 10 ? `0${breakTimer}` : breakTimer}:
-                  {seconds === 60
-                    ? "00"
-                    : seconds < 10
-                    ? `0${seconds}`
-                    : seconds}
-                </>
-              )}
+        <div className="controls-and-display-container">
+          <div className="controls-container">
+            <LengthControl
+              type="Break"
+              value={breakLength}
+              handleBreak={handleBreak}
+              start={start}
+            />
+            <LengthControl
+              type="Session"
+              value={sessionLength}
+              handleBreak={handleBreak}
+              start={start}
+            />
+          </div>
+          <div className="timer">
+            <div
+              className={`timer-wrapper ${sessionTimer === 0 && "text-red"}`}
+            >
+              <div id="timer-label">{!isBreak ? "Session" : "Break"}</div>
+              <div id="time-left">
+                {!isBreak ? (
+                  <>
+                    {" "}
+                    {sessionTimer < 10 ? `0${sessionTimer}` : sessionTimer}:
+                    {seconds === 60
+                      ? "00"
+                      : seconds < 10
+                      ? `0${seconds}`
+                      : seconds}
+                  </>
+                ) : (
+                  <>
+                    {" "}
+                    {breakTimer < 10 ? `0${breakTimer}` : breakTimer}:
+                    {seconds === 60
+                      ? "00"
+                      : seconds < 10
+                      ? `0${seconds}`
+                      : seconds}
+                  </>
+                )}
+              </div>
             </div>
           </div>
+          <div className="timer-control">
+            <button
+              id="start_stop"
+              onClick={() => {
+                setStart(!start);
+              }}
+            >
+              <i className="fa fa-play fa-2x"></i>
+              <i className="fa fa-pause fa-2x"></i>
+            </button>
+            <button id="reset" onClick={handleReset}>
+              <i className="fa fa-refresh fa-2x"></i>
+            </button>
+          </div>
+          <audio id="beep" preload="auto" src={beep}></audio>
         </div>
-        <div className="timer-control">
-          <button
-            id="start_stop"
-            onClick={() => {
-              setStart(!start);
-            }}
-          >
-            <i className="fa fa-play fa-2x"></i>
-            <i className="fa fa-pause fa-2x"></i>
-          </button>
-          <button id="reset" onClick={handleReset}>
-            <i className="fa fa-refresh fa-2x"></i>
-          </button>
-        </div>
-        <audio id="beep" preload="auto" src={beep}></audio>
       </div>
     </main>
   );
