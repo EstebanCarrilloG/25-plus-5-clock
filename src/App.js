@@ -34,7 +34,7 @@ function App() {
     }
 
     if (start === true) {
-      myInterval = setInterval(countDown, 500, seconds);
+      myInterval = setInterval(countDown, 1000, seconds);
 
       if (seconds === 59 && !isBreak) {
         setSessionTimer((a) => (a === 0 ? 0 : a - 1));
