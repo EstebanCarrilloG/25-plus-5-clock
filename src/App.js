@@ -1,47 +1,46 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import beep from "./sounds/BeepSound.wav";
 import "./App.css";
 import LengthControl from "./components/LengthControl";
+import { useRef } from "react";
 
 function App() {
-  const [sessionLength, setSessionLength] = useState(25);
-  const [breakLength, setBreakLength] = useState(5);
-  const [seconds, setSeconds] = useState(0);
+  const [sessionValue, setSessionValue] = useState(25);
+  const [breakValue, setBreakValue] = useState(5);
+  const [seconds, setSeconds] = useState(60);
   const [start, setStart] = useState(false);
-
-  const [sessionTimer, setSessionTimer] = useState(sessionLength);
-  const [breakTimer, setBreakTimer] = useState(breakLength);
+  const [timer, setTimer] = useState(sessionValue);
   const [isBreak, setIsBreak] = useState(false);
-  const countDown = () => {
+
+  const audio = useRef(null);
+  const timerRef = useRef(null);
+  const countDown = useCallback(() => {
     setSeconds((seconds) => (seconds === 0 ? 60 : seconds - 1));
 
-    if (seconds === 0 && sessionTimer === 0) {
-      setIsBreak(true);
-      setSessionTimer(sessionLength);
+    if (seconds === 60) {
+      setTimer((a) => (a === 0 ? 0 : a - 1));
     }
-    if (seconds === 0 && breakTimer === 0) {
-      setIsBreak(false);
-      setBreakTimer(breakLength);
+
+    if (seconds === 0 && timer === 0) {
+      if (!isBreak) {
+        setTimer(breakValue);
+      } else {
+        setTimer(sessionValue);
+      }
+
+      setIsBreak((prev) => !prev);
     }
-  };
+  }, [breakValue, sessionValue, seconds, isBreak, timer]);
 
   useEffect(() => {
     let myInterval;
-    const audio = document.getElementById("beep");
 
-    if (document.getElementById("time-left").innerText === "00:00") {
-      audio.play();
+    if (timerRef.current.innerText === "00:00") {
+      audio.current.play();
     }
 
     if (start === true) {
-      myInterval = setInterval(countDown, 1000, seconds);
-
-      if (seconds === 59 && !isBreak) {
-        setSessionTimer((a) => (a === 0 ? 0 : a - 1));
-      }
-      if (seconds === 59 && isBreak) {
-        setBreakTimer((a) => (a === 0 ? 0 : a - 1));
-      }
+      myInterval = setInterval(countDown, 200);
     } else {
       clearInterval(myInterval);
     }
@@ -49,30 +48,27 @@ function App() {
     return () => {
       clearInterval(myInterval);
     };
-  }, [start, seconds]);
+  }, [start, countDown]);
 
-  const handleBreak = (e, type) => {
+  const handleTime = (e, type) => {
     if (type === "Break") {
-      setBreakLength(e);
-      setBreakTimer(e);
+      setBreakValue(e);
     }
 
     if (type === "Session") {
-      setSessionLength(e);
-      setSessionTimer(e);
+      setSessionValue(e);
+      setTimer(e);
     }
   };
 
-  const handleReset = (e) => {
-    const audio = document.getElementById("beep");
+  const handleReset = () => {
     setStart(false);
     setSeconds(60);
-    handleBreak(25, "Session");
-    handleBreak(5, "Break");
+    handleTime(25, "Session");
+    handleTime(5, "Break");
     setIsBreak(false);
-    audio.pause();
-    audio.currentTime = 0;
-    //setSessionTimer(sessionLength);
+    audio.current.pause();
+    audio.current.currentTime = 0;
   };
 
   return (
@@ -83,44 +79,23 @@ function App() {
           <div className="controls-container">
             <LengthControl
               type="Break"
-              value={breakLength}
-              handleBreak={handleBreak}
+              value={breakValue}
+              handleTime={handleTime}
               start={start}
             />
             <LengthControl
               type="Session"
-              value={sessionLength}
-              handleBreak={handleBreak}
+              value={sessionValue}
+              handleTime={handleTime}
               start={start}
             />
           </div>
           <div className="timer">
-            <div
-              className={`timer-wrapper ${sessionTimer === 0 && "text-red"}`}
-            >
+            <div className={`timer-wrapper ${timer === 0 && "text-red"}`}>
               <div id="timer-label">{!isBreak ? "Session" : "Break"}</div>
-              <div id="time-left">
-                {!isBreak ? (
-                  <>
-                    {" "}
-                    {sessionTimer < 10 ? `0${sessionTimer}` : sessionTimer}:
-                    {seconds === 60
-                      ? "00"
-                      : seconds < 10
-                      ? `0${seconds}`
-                      : seconds}
-                  </>
-                ) : (
-                  <>
-                    {" "}
-                    {breakTimer < 10 ? `0${breakTimer}` : breakTimer}:
-                    {seconds === 60
-                      ? "00"
-                      : seconds < 10
-                      ? `0${seconds}`
-                      : seconds}
-                  </>
-                )}
+              <div id="time-left" ref={timerRef}>
+                {timer < 10 ? `0${timer}` : timer}:
+                {seconds === 60 ? "00" : seconds < 10 ? `0${seconds}` : seconds}
               </div>
             </div>
           </div>
@@ -138,7 +113,7 @@ function App() {
               <i className="fa fa-refresh fa-2x"></i>
             </button>
           </div>
-          <audio id="beep" preload="auto" src={beep}></audio>
+          <audio id="beep" preload="auto" src={beep} ref={audio}></audio>
         </div>
       </div>
     </main>

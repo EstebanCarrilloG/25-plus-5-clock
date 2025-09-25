@@ -1,12 +1,12 @@
 import "../styles/lengthControl.css";
 
-export default function LengthControl({ type, value, handleBreak, start }) {
+export default function LengthControl({ type, value, handleTime, start }) {
   return (
     <div className="length-control">
       <div className="label" id={type.toLowerCase() + "-label"}>{type} Length</div>
       <div className="btn-group">
       <button
-        onClick={() => !start && handleBreak(value === 1 ? 1 : value - 1, type)}
+        onClick={() => !start && handleTime(value === 1 ? 1 : value - 1, type)}
         className="btn-level"
         id={type.toLowerCase() + "-decrement"}
         value="-"
@@ -18,7 +18,7 @@ export default function LengthControl({ type, value, handleBreak, start }) {
       </span>
       <button
         onClick={() =>
-          !start && handleBreak(value === 60 ? 60 : value + 1, type)
+          !start && handleTime(value === 60 ? 60 : value + 1, type)
         }
         className="btn-level"
         id={type.toLowerCase() + "-increment"}
